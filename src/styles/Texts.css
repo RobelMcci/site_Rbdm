@@ -1,0 +1,575 @@
+/* Variables et reset */
+:root {
+  --primary-red: #bd342e;
+  --secondary-red: #bc473e;
+  --beige: #d9c1b8;
+  --beige-light: rgba(217, 193, 184, 0.3);
+  --beige-lighter: rgba(217, 193, 184, 0.1);
+  --text-dark: #333333;
+  --text-light: #666666;
+  --white: #ffffff;
+  --shadow: 0 4px 20px rgba(189, 52, 46, 0.1);
+  --shadow-hover: 0 8px 30px rgba(189, 52, 46, 0.15);
+  --border-radius: 20px;
+  --transition: all 0.3s ease;
+}
+
+.messages {
+  min-height: 100vh;
+  padding: 100px 2rem 4rem;
+  background: linear-gradient(135deg, var(--beige-lighter) 0%, rgba(255, 255, 255, 0.9) 100%);
+}
+
+/* En-tête */
+.messages-header {
+  text-align: center;
+  margin-bottom: 4rem;
+  animation: fadeInUp 0.8s ease;
+}
+
+.messages-header h1 {
+  font-size: 3.5rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, var(--primary-red), var(--secondary-red));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.messages-header p {
+  font-size: 1.3rem;
+  color: var(--text-light);
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* Catégories */
+.categories {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 4rem;
+  animation: fadeInUp 0.8s ease 0.2s both;
+}
+
+.category-btn {
+  padding: 1rem 2rem;
+  border: 2px solid var(--beige);
+  background: var(--white);
+  color: var(--text-dark);
+  border-radius: var(--border-radius);
+  font-weight: 600;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.category-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, var(--beige-light), transparent);
+  transition: left 0.5s ease;
+}
+
+.category-btn:hover::before {
+  left: 100%;
+}
+
+.category-btn:hover {
+  border-color: var(--primary-red);
+  color: var(--primary-red);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.category-btn.active {
+  background: linear-gradient(135deg, var(--primary-red), var(--secondary-red));
+  color: var(--white);
+  border-color: transparent;
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-2px);
+}
+
+/* Liste des messages */
+.messages-list {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: grid;
+  gap: 2.5rem;
+  animation: fadeInUp 0.8s ease 0.4s both;
+}
+
+/* Carte de message */
+.message-card {
+  background: var(--white);
+  padding: 3rem;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+  border: 1px solid var(--beige-light);
+  position: relative;
+  overflow: hidden;
+}
+
+.message-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(135deg, var(--primary-red), var(--secondary-red));
+  opacity: 0;
+  transition: var(--transition);
+}
+
+.message-card:hover::before {
+  opacity: 1;
+}
+
+.message-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-hover);
+}
+
+/* Styles spécifiques pour les poèmes */
+.message-card[data-type="poem"] {
+  background: linear-gradient(135deg, var(--white) 0%, var(--beige-lighter) 100%);
+  font-style: italic;
+}
+
+.message-card[data-type="poem"] .message-content {
+  white-space: pre-line;
+  line-height: 1.8;
+  text-align: center;
+  font-size: 1.2rem;
+}
+
+/* Styles pour les mots doux */
+.message-card[data-type="sweet"] {
+  border-left: 4px solid var(--primary-red);
+}
+
+.message-card[data-type="sweet"] .message-content {
+  font-size: 1.3rem;
+  font-weight: 500;
+  text-align: center;
+  color: var(--text-dark);
+}
+
+/* Styles pour le réconfort */
+.message-card[data-type="comfort"] {
+  background: linear-gradient(135deg, #fff9f8 0%, var(--white) 100%);
+  border: 1px solid rgba(189, 52, 46, 0.2);
+}
+
+/* Styles pour les souvenirs */
+.message-card[data-type="memory"] {
+  background: linear-gradient(135deg, var(--white) 0%, #f8f6f5 100%);
+}
+
+/* Contenu du message */
+.message-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--primary-red);
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.message-content {
+  font-size: 1.2rem;
+  line-height: 1.7;
+  color: var(--text-dark);
+  margin-bottom: 2rem;
+  text-align: left;
+}
+
+/* Métadonnées */
+.message-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--beige-light);
+}
+
+.date {
+  color: var(--text-light);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.author {
+  color: var(--secondary-red);
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.mood {
+  font-size: 1.5rem;
+  animation: bounce 2s infinite;
+}
+
+.context {
+  color: var(--text-light);
+  font-style: italic;
+  font-size: 0.9rem;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.emotion {
+  font-size: 2rem;
+  animation: pulse 2s infinite;
+}
+
+/* État vide */
+.empty-messages {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: var(--white);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  animation: fadeInUp 0.8s ease;
+}
+
+.empty-messages p {
+  font-size: 1.3rem;
+  color: var(--text-light);
+  margin-bottom: 2rem;
+}
+
+/* Bouton d'ajout (optionnel pour plus tard) */
+.add-message-btn {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-red), var(--secondary-red));
+  color: var(--white);
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  box-shadow: var(--shadow-hover);
+  transition: var(--transition);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.add-message-btn:hover {
+  transform: scale(1.1) rotate(90deg);
+  box-shadow: 0 12px 40px rgba(189, 52, 46, 0.3);
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-5px);
+  }
+  60% {
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Animation d'entrée des cartes */
+.message-card {
+  animation: slideIn 0.6s ease forwards;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+
+/* Tablettes (768px - 1024px) */
+@media (max-width: 1024px) {
+  .messages {
+    padding: 90px 1.5rem 3rem;
+  }
+  
+  .messages-header h1 {
+    font-size: 3rem;
+  }
+  
+  .messages-header p {
+    font-size: 1.2rem;
+  }
+  
+  .categories {
+    margin-bottom: 3rem;
+  }
+  
+  .category-btn {
+    padding: 0.9rem 1.8rem;
+    font-size: 1rem;
+  }
+  
+  .message-card {
+    padding: 2.5rem;
+  }
+  
+  .message-title {
+    font-size: 1.6rem;
+  }
+  
+  .message-content {
+    font-size: 1.1rem;
+  }
+}
+
+/* Mobile Landscape & Petites Tablettes (600px - 767px) */
+@media (max-width: 767px) {
+  .messages {
+    padding: 80px 1rem 2rem;
+  }
+  
+  .messages-header {
+    margin-bottom: 3rem;
+  }
+  
+  .messages-header h1 {
+    font-size: 2.5rem;
+  }
+  
+  .messages-header p {
+    font-size: 1.1rem;
+  }
+  
+  .categories {
+    gap: 0.8rem;
+    margin-bottom: 2.5rem;
+  }
+  
+  .category-btn {
+    padding: 0.8rem 1.5rem;
+    font-size: 0.9rem;
+    flex: 1;
+    min-width: 140px;
+  }
+  
+  .messages-list {
+    gap: 2rem;
+  }
+  
+  .message-card {
+    padding: 2rem;
+  }
+  
+  .message-title {
+    font-size: 1.4rem;
+  }
+  
+  .message-content {
+    font-size: 1rem;
+  }
+  
+  .message-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .add-message-btn {
+    bottom: 1rem;
+    right: 1rem;
+    width: 50px;
+    height: 50px;
+    font-size: 1.5rem;
+  }
+}
+
+/* Mobile Portrait (480px et moins) */
+@media (max-width: 480px) {
+  .messages {
+    padding: 70px 0.5rem 1rem;
+  }
+  
+  .messages-header h1 {
+    font-size: 2rem;
+  }
+  
+  .messages-header p {
+    font-size: 1rem;
+  }
+  
+  .categories {
+    gap: 0.5rem;
+  }
+  
+  .category-btn {
+    padding: 0.7rem 1rem;
+    font-size: 0.8rem;
+    min-width: 120px;
+  }
+  
+  .message-card {
+    padding: 1.5rem;
+  }
+  
+  .message-title {
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+  }
+  
+  .message-content {
+    font-size: 0.95rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .message-card[data-type="poem"] .message-content {
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+  
+  .mood, .emotion {
+    font-size: 1.2rem;
+  }
+}
+
+/* Grands écrans TV (1400px et plus) */
+@media (min-width: 1400px) {
+  .messages {
+    padding: 120px 3rem 6rem;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  
+  .messages-header h1 {
+    font-size: 4rem;
+  }
+  
+  .messages-header p {
+    font-size: 1.5rem;
+  }
+  
+  .categories {
+    gap: 1.5rem;
+  }
+  
+  .category-btn {
+    padding: 1.2rem 2.5rem;
+    font-size: 1.2rem;
+  }
+  
+  .messages-list {
+    max-width: 1200px;
+    gap: 3rem;
+  }
+  
+  .message-card {
+    padding: 4rem;
+  }
+  
+  .message-title {
+    font-size: 2rem;
+  }
+  
+  .message-content {
+    font-size: 1.3rem;
+  }
+}
+
+/* Support pour le mode réduit de mouvement */
+@media (prefers-reduced-motion: reduce) {
+  .messages-header,
+  .categories,
+  .messages-list,
+  .message-card,
+  .category-btn,
+  .add-message-btn {
+    animation: none;
+    transition: none;
+  }
+  
+  .category-btn::before,
+  .message-card::before {
+    display: none;
+  }
+  
+  .mood, .emotion {
+    animation: none;
+  }
+  
+  .message-card:hover {
+    transform: none;
+  }
+  
+  .add-message-btn:hover {
+    transform: none;
+  }
+}
+
+/* Correction pour Safari */
+@media not all and (min-resolution: 0.001dpcm) {
+  @supports (-webkit-appearance: none) {
+    .messages-header h1 {
+      background: var(--primary-red);
+      -webkit-text-fill-color: transparent;
+    }
+  }
+}
+
+/* Support pour les navigateurs anciens */
+@supports not (display: grid) {
+  .messages-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+  
+  .categories {
+    display: flex;
+    flex-wrap: wrap;
+  }
+}

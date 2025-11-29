@@ -146,6 +146,14 @@ const Home = () => {
     }
   };
 
+  const particles = useMemo(() => {
+    return Array.from({ length: 30 }).map(() => ({
+      left: `${Math.random() * 100}%`,
+      delay: `${Math.random() * 6}s`,
+      duration: `${3 + Math.random() * 4}s`,
+    }));
+  }, []);
+
   return (
     <div className={`home ${isVisible ? "visible" : ""}`}>
       {/* Progress Bar */}
@@ -158,18 +166,16 @@ const Home = () => {
       <section className="hero-section" ref={addToRefs}>
         <div className="hero-background">
           <div className="floating-particles">
-            {[...Array(20)].map((_, i) => (
+            {particles.map((p, i) => (
               <div
                 key={i}
                 className="particle"
                 style={{
-                  left: `${Math.random() * 100}%`,
-                  animationDelay: `${Math.random() * 6}s`,
-                  animationDuration: `${3 + Math.random() * 4}s`,
+                  left: p.left,
+                  animationDelay: p.delay,
+                  animationDuration: p.duration,
                 }}
-              >
-                {["💖", "✨", "🌟", "🥰", "💕"][Math.floor(Math.random() * 5)]}
-              </div>
+              />
             ))}
           </div>
         </div>

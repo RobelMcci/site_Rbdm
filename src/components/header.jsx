@@ -27,7 +27,7 @@ const Header = () => {
       <div className="header-container">
         <div className="logo">
           <Link to="/" className="logo-text">
-            Notre Amour
+            Rb & Dm
           </Link>
         </div>
 

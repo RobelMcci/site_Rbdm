@@ -1,85 +1,115 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useMemo } from "react";
+import { Link } from "react-router-dom";
 import "../styles/home.css";
 
+const START_DATE = new Date(2019, 1, 14);
+
+const LOVE_MESSAGES = [
+  {
+    text: "Chaque instant avec toi est un trésor",
+    emoji: "💖",
+    color: "#bd342e",
+  },
+  { text: "Ton sourire illumine mes journées", emoji: "✨", color: "#bc473e" },
+  {
+    text: "Je t'aime plus que les mots ne peuvent le dire",
+    emoji: "📝",
+    color: "#d9c1b8",
+  },
+  { text: "Tu es ma plus belle aventure", emoji: "🌟", color: "#bd342e" },
+  { text: "Notre amour grandit chaque jour", emoji: "🌱", color: "#bc473e" },
+];
+
+const QUICK_LINKS = [
+  {
+    icon: "📸",
+    title: "Galerie Photo",
+    description: "Parcourez nos plus beaux souvenirs immortalisés en images",
+    link: "/gallery",
+    color: "#bd342e",
+  },
+  {
+    icon: "💌",
+    title: "Messages du Cœur",
+    description: "Laissez-vous porter par nos mots doux et poèmes",
+    link: "/messages",
+    color: "#bc473e",
+  },
+  {
+    icon: "📖",
+    title: "Notre Histoire",
+    description: "Revivez chaque chapitre de notre belle aventure",
+    link: "/story",
+    color: "#d9c1b8",
+  },
+];
+
+const PREVIEW_GALLERY = [
+  { type: "museum", year: "2023", title: "Visite Culturelle", emoji: "🏛️" },
+  { type: "beach", year: "2024", title: "Journée Plage", emoji: "🏖️" },
+  { type: "anniversary", year: "2022", title: "Anniversaire", emoji: "🎂" },
+  { type: "mountain", year: "2023", title: "Randonnée", emoji: "⛰️" },
+];
+
 const Home = () => {
-  const [timeTogether, setTimeTogether] = useState({
-    years: 0,
-    months: 0,
-    days: 0,
-    hours: 0,
-    minutes: 0,
-    seconds: 0,
-  });
+  const [timeTogether, setTimeTogether] = useState({});
   const [currentMessage, setCurrentMessage] = useState(0);
-  const [isVisible, setIsVisible] = useState(false);
   const [counters, setCounters] = useState({
     memories: 0,
     photos: 0,
     messages: 0,
   });
+  const [isVisible, setIsVisible] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
 
   const sectionRefs = useRef([]);
   const observerRef = useRef(null);
 
-  const loveMessages = [
-    {
-      text: "Chaque instant avec toi est un trésor",
-      emoji: "💖",
-      color: "#bd342e",
-    },
-    {
-      text: "Ton sourire illumine mes journées",
-      emoji: "✨",
-      color: "#bc473e",
-    },
-    {
-      text: "Je t'aime plus que les mots ne peuvent le dire",
-      emoji: "📝",
-      color: "#d9c1b8",
-    },
-    { text: "Tu es ma plus belle aventure", emoji: "🌟", color: "#bd342e" },
-    { text: "Notre amour grandit chaque jour", emoji: "🌱", color: "#bc473e" },
-  ];
+  // Generate particles once
+  const particles = useMemo(
+    () =>
+      Array.from({ length: 30 }).map(() => ({
+        left: `${Math.random() * 100}%`,
+        delay: `${Math.random() * 6}s`,
+        duration: `${3 + Math.random() * 4}s`,
+      })),
+    []
+  );
 
-  // Animation des compteurs
+  /** -----------------------------
+   *   COUNTERS ANIMATION
+   * ----------------------------- */
   useEffect(() => {
-    const animateCounter = (start, end, duration, callback) => {
-      let startTimestamp = null;
-      const step = (timestamp) => {
-        if (!startTimestamp) startTimestamp = timestamp;
-        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-        const value = Math.floor(progress * (end - start) + start);
-        callback(value);
-        if (progress < 1) {
-          window.requestAnimationFrame(step);
-        }
+    const animateCounter = (start, end, duration, setter) => {
+      let startTime = null;
+      const animate = (time) => {
+        if (!startTime) startTime = time;
+        const progress = Math.min((time - startTime) / duration, 1);
+        setter(Math.floor(start + (end - start) * progress));
+        if (progress < 1) requestAnimationFrame(animate);
       };
-      window.requestAnimationFrame(step);
+      requestAnimationFrame(animate);
     };
 
-    animateCounter(0, 127, 2000, (val) =>
-      setCounters((prev) => ({ ...prev, memories: val }))
+    animateCounter(0, 127, 2000, (v) =>
+      setCounters((prev) => ({ ...prev, memories: v }))
     );
-    animateCounter(0, 356, 2500, (val) =>
-      setCounters((prev) => ({ ...prev, photos: val }))
+    animateCounter(0, 356, 2500, (v) =>
+      setCounters((prev) => ({ ...prev, photos: v }))
     );
-    animateCounter(0, 89, 1800, (val) =>
-      setCounters((prev) => ({ ...prev, messages: val }))
+    animateCounter(0, 89, 1800, (v) =>
+      setCounters((prev) => ({ ...prev, messages: v }))
     );
   }, []);
 
-  // Timer en temps réel
   useEffect(() => {
-    const startDate = new Date(2019, 1, 14);
-
     const updateTimer = () => {
       const now = new Date();
-      const diff = now - startDate;
+      let diff = now - START_DATE;
 
-      const years = now.getFullYear() - startDate.getFullYear();
-      const months = now.getMonth() - startDate.getMonth();
-      const days = now.getDate() - startDate.getDate();
+      const years = now.getFullYear() - START_DATE.getFullYear();
+      const months = now.getMonth() - START_DATE.getMonth();
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
       const hours = now.getHours();
       const minutes = now.getMinutes();
       const seconds = now.getSeconds();
@@ -88,55 +118,50 @@ const Home = () => {
     };
 
     updateTimer();
-    const timerInterval = setInterval(updateTimer, 1000);
-    return () => clearInterval(timerInterval);
+    const interval = setInterval(updateTimer, 1000);
+    return () => clearInterval(interval);
   }, []);
 
-  // Carousel de messages
+  /** -----------------------------
+   *   MESSAGE CAROUSEL
+   * ----------------------------- */
   useEffect(() => {
-    const messageInterval = setInterval(() => {
-      setCurrentMessage((prev) => (prev + 1) % loveMessages.length);
-    }, 3500);
-    return () => clearInterval(messageInterval);
+    const interval = setInterval(() => {
+      setCurrentMessage((prev) => (prev + 1) % LOVE_MESSAGES.length);
+    }, 3000);
+    return () => clearInterval(interval);
   }, []);
 
-  // Scroll animations
+  /** -----------------------------
+   *   SCROLL & INTERSECTION OBSERVER
+   * ----------------------------- */
   useEffect(() => {
     setIsVisible(true);
 
-    // Scroll progress
     const handleScroll = () => {
-      const scrollTop = window.pageYOffset;
-      const docHeight =
+      const scrollTop = window.scrollY;
+      const totalHeight =
         document.documentElement.scrollHeight - window.innerHeight;
-      const progress = (scrollTop / docHeight) * 100;
-      setScrollProgress(progress);
+      setScrollProgress((scrollTop / totalHeight) * 100);
     };
-
-    // Intersection Observer pour les animations
-    observerRef.current = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("animate-in");
-          }
-        });
-      },
-      { threshold: 0.1, rootMargin: "-50px" }
-    );
 
     window.addEventListener("scroll", handleScroll);
 
-    // Observe all sections
-    sectionRefs.current.forEach((ref) => {
-      if (ref) observerRef.current.observe(ref);
-    });
+    observerRef.current = new IntersectionObserver(
+      (entries) =>
+        entries.forEach(
+          (e) => e.isIntersecting && e.target.classList.add("animate-in")
+        ),
+      { threshold: 0.1, rootMargin: "-40px" }
+    );
+
+    sectionRefs.current.forEach(
+      (ref) => ref && observerRef.current.observe(ref)
+    );
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
-      if (observerRef.current) {
-        observerRef.current.disconnect();
-      }
+      observerRef.current?.disconnect();
     };
   }, []);
 
@@ -146,23 +171,19 @@ const Home = () => {
     }
   };
 
-  const particles = useMemo(() => {
-    return Array.from({ length: 30 }).map(() => ({
-      left: `${Math.random() * 100}%`,
-      delay: `${Math.random() * 6}s`,
-      duration: `${3 + Math.random() * 4}s`,
-    }));
-  }, []);
+  /** -----------------------------
+   *   RENDER COMPONENT
+   * ----------------------------- */
 
   return (
     <div className={`home ${isVisible ? "visible" : ""}`}>
-      {/* Progress Bar */}
+      {/* Progress bar */}
       <div
         className="scroll-progress"
-        style={{ width: `${scrollProgress}%` }}
-      ></div>
+        style={{ width: scrollProgress + "%" }}
+      />
 
-      {/* Hero Section avec animations */}
+      {/* HERO SECTION */}
       <section className="hero-section" ref={addToRefs}>
         <div className="hero-background">
           <div className="floating-particles">
@@ -181,41 +202,33 @@ const Home = () => {
         </div>
 
         <div className="hero-content">
-          <div className="hero-text">
-            <h1 className="hero-title">
-              <span className="title-line">Bienvenue dans</span>
-              <span className="title-line highlight">Notre Monde</span>
-            </h1>
+          <h1 className="hero-title">
+            <span className="title-line">Bienvenue dans</span>
+            <span className="title-line highlight">Notre Monde</span>
+          </h1>
 
-            <div className="message-carousel">
-              <div
-                key={currentMessage}
-                className="message-slide"
-                style={{ color: loveMessages[currentMessage].color }}
-              >
-                <span className="message-emoji">
-                  {loveMessages[currentMessage].emoji}
-                </span>
-                {loveMessages[currentMessage].text}
-              </div>
+          {/* Message carousel */}
+          <div className="message-carousel">
+            <div
+              key={currentMessage}
+              className="message-slide"
+              style={{ color: LOVE_MESSAGES[currentMessage].color }}
+            >
+              <span className="message-emoji">
+                {LOVE_MESSAGES[currentMessage].emoji}
+              </span>
+              {LOVE_MESSAGES[currentMessage].text}
             </div>
           </div>
 
+          {/* CTA */}
           <div className="cta-buttons">
-            <a href="/story" className="btn btn-primary magnetic" data-magnetic>
-              <span className="btn-icon">📖</span>
-              Découvrir notre histoire
-              <span className="btn-arrow">→</span>
-            </a>
-            <a
-              href="/gallery"
-              className="btn btn-secondary magnetic"
-              data-magnetic
-            >
-              <span className="btn-icon">📸</span>
-              Explorer la galerie
-              <span className="btn-arrow">→</span>
-            </a>
+            <Link to="/story" className="btn btn-primary magnetic">
+              📖 Découvrir notre histoire →
+            </Link>
+            <Link to="/gallery" className="btn btn-secondary magnetic">
+              📸 Explorer la galerie →
+            </Link>
           </div>
 
           <div className="scroll-indicator">
@@ -227,42 +240,30 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Love Stats avec compteurs animés */}
+      {/* STATS SECTION */}
       <section className="stats-section" ref={addToRefs}>
         <div className="container">
           <div className="stats-grid">
-            <div className="stat-item">
-              <div className="stat-number counter" data-count="127">
-                {counters.memories}+
+            {[
+              { value: counters.memories, label: "Souvenirs", emoji: "🎉" },
+              { value: counters.photos, label: "Photos", emoji: "📸" },
+              { value: counters.messages, label: "Messages", emoji: "💌" },
+            ].map((stat, i) => (
+              <div key={i} className="stat-item">
+                <div className="stat-number">{stat.value}+</div>
+                <div className="stat-label">{stat.label}</div>
+                <div className="stat-emoji">{stat.emoji}</div>
               </div>
-              <div className="stat-label">Souvenirs</div>
-              <div className="stat-emoji">🎉</div>
-            </div>
-            <div className="stat-item">
-              <div className="stat-number counter" data-count="356">
-                {counters.photos}+
-              </div>
-              <div className="stat-label">Photos</div>
-              <div className="stat-emoji">📸</div>
-            </div>
-            <div className="stat-item">
-              <div className="stat-number counter" data-count="89">
-                {counters.messages}+
-              </div>
-              <div className="stat-label">Messages</div>
-              <div className="stat-emoji">💌</div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Love Timer avec animation numérique */}
+      {/* LOVE TIMER */}
       <section className="love-timer-section" ref={addToRefs}>
         <div className="container">
           <h2 className="section-title">Notre Temps Ensemble</h2>
-          <p className="section-subtitle">
-            Depuis le 14 Février 2019, chaque seconde compte
-          </p>
+          <p className="section-subtitle">Depuis le 14 Février 2019</p>
 
           <div className="timer-grid">
             {[
@@ -272,11 +273,11 @@ const Home = () => {
               { value: timeTogether.hours, label: "Heures", emoji: "⏰" },
               { value: timeTogether.minutes, label: "Minutes", emoji: "⏱️" },
               { value: timeTogether.seconds, label: "Secondes", emoji: "⚡" },
-            ].map((item, index) => (
-              <div key={index} className="timer-card">
+            ].map((item, i) => (
+              <div key={i} className="timer-card">
                 <div className="timer-emoji">{item.emoji}</div>
-                <div className="timer-number flip-counter">
-                  {item.value.toString().padStart(2, "0")}
+                <div className="timer-number">
+                  {String(item.value).padStart(2, "0")}
                 </div>
                 <div className="timer-label">{item.label}</div>
               </div>
@@ -285,102 +286,40 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Quick Links avec animations au hover */}
+      {/* QUICK LINKS */}
       <section className="quick-links-section" ref={addToRefs}>
         <div className="container">
           <h2 className="section-title">Explorez Notre Univers</h2>
-          <p className="section-subtitle">
-            Découvrez les différentes facettes de notre histoire d'amour
-          </p>
 
           <div className="links-grid">
-            {[
-              {
-                icon: "📸",
-                title: "Galerie Photo",
-                description:
-                  "Parcourez nos plus beaux souvenirs immortalisés en images",
-                link: "/gallery",
-                color: "#bd342e",
-              },
-              {
-                icon: "💌",
-                title: "Messages du Cœur",
-                description: "Laissez-vous émettre par nos mots doux et poèmes",
-                link: "/messages",
-                color: "#bc473e",
-              },
-              {
-                icon: "📖",
-                title: "Notre Histoire",
-                description: "Revivez chaque chapitre de notre belle aventure",
-                link: "/story",
-                color: "#d9c1b8",
-              },
-            ].map((item, index) => (
-              <a
-                key={index}
-                href={item.link}
+            {QUICK_LINKS.map((item, i) => (
+              <Link
+                key={i}
+                to={item.link}
                 className="link-card magnetic"
-                data-magnetic
                 style={{ "--accent-color": item.color }}
               >
-                <div className="card-glow"></div>
                 <div className="card-icon">{item.icon}</div>
                 <h3>{item.title}</h3>
                 <p>{item.description}</p>
-                <div className="card-arrow">
-                  <span>→</span>
-                </div>
-              </a>
+                <div className="card-arrow">→</div>
+              </Link>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Animated Preview Gallery */}
+      {/* PREVIEW GALLERY */}
       <section className="preview-gallery-section" ref={addToRefs}>
         <div className="container">
-          <div className="preview-header">
-            <h2 className="section-title">Quelques Pépites</h2>
-            <p className="section-subtitle">
-              Un aperçu de nos moments préférés
-            </p>
-          </div>
+          <h2 className="section-title">Quelques Pépites</h2>
 
           <div className="gallery-carousel">
-            {[
-              {
-                type: "museum",
-                year: "2023",
-                title: "Visite Culturelle",
-                emoji: "🏛️",
-              },
-              {
-                type: "beach",
-                year: "2024",
-                title: "Journée Plage",
-                emoji: "🏖️",
-              },
-              {
-                type: "anniversary",
-                year: "2022",
-                title: "Anniversaire",
-                emoji: "🎂",
-              },
-              {
-                type: "mountain",
-                year: "2023",
-                title: "Randonnée",
-                emoji: "⛰️",
-              },
-            ].map((item, index) => (
-              <div key={index} className="gallery-item">
+            {PREVIEW_GALLERY.map((item, i) => (
+              <div key={i} className="gallery-item">
                 <div className={`item-image ${item.type}-image`}>
-                  <div className="image-overlay">
-                    <span className="year-badge">{item.year}</span>
-                    <span className="item-emoji">{item.emoji}</span>
-                  </div>
+                  <span className="year-badge">{item.year}</span>
+                  <span className="item-emoji">{item.emoji}</span>
                 </div>
                 <div className="item-content">
                   <h4>{item.title}</h4>
@@ -391,60 +330,40 @@ const Home = () => {
           </div>
 
           <div className="preview-actions">
-            <a
-              href="/gallery"
-              className="btn btn-outline magnetic"
-              data-magnetic
-            >
-              <span className="btn-icon">🖼️</span>
-              Voir toute la galerie
-            </a>
+            <Link to="/gallery" className="btn btn-outline magnetic">
+              🖼️ Voir toute la galerie
+            </Link>
           </div>
         </div>
       </section>
 
-      {/* Final CTA avec animation parallax */}
+      {/* FINAL CTA */}
       <section className="final-cta-section" ref={addToRefs}>
         <div className="cta-background">
-          <div className="parallax-hearts">
-            {[...Array(15)].map((_, i) => (
-              <div
-                key={i}
-                className="parallax-heart"
-                style={{
-                  left: `${i * 7}%`,
-                  animationDelay: `${i * 0.5}s`,
-                }}
-              >
-                ❤️
-              </div>
-            ))}
-          </div>
+          {[...Array(15)].map((_, i) => (
+            <div
+              key={i}
+              className="parallax-heart"
+              style={{ left: `${i * 7}%`, animationDelay: `${i * 0.5}s` }}
+            >
+              ❤️
+            </div>
+          ))}
         </div>
 
         <div className="container">
-          <div className="cta-content">
-            <h2 className="cta-title">Prêt à découvrir notre histoire ?</h2>
-            <p className="cta-subtitle">
-              Chaque clic vous rapproche un peu plus de notre univers rempli
-              d'amour et de souvenirs précieux
-            </p>
-            <div className="cta-buttons-group">
-              <a
-                href="/story"
-                className="btn btn-primary btn-large magnetic"
-                data-magnetic
-              >
-                Commencer l'aventure
-              </a>
-              <a
-                href="/gallery"
-                className="btn btn-secondary btn-large magnetic"
-                data-magnetic
-              >
-                Voir les photos
-              </a>
-            </div>
+          <h2 className="cta-title">Prêt à découvrir notre histoire ?</h2>
+
+          <div className="cta-buttons-group">
+            <Link to="/story" className="btn btn-primary btn-large magnetic">
+              Commencer l'aventure
+            </Link>
+            <Link
+              to="/gallery"
+              className="btn btn-secondary btn-large magnetic"
+            >
+              Voir les photos
+            </Link>
           </div>
         </div>
       </section>

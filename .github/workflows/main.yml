@@ -15,7 +15,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0 
+          fetch-depth: 0
+
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v6
         env:
@@ -33,7 +34,7 @@ jobs:
         run: npm install
 
       - name: Run Snyk test
-        uses: snyk/actions/node@master
+        uses: snyk/actions/node@8c8913c4ab6d72bcb7e1c3dd3977e12ec8036f4d
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
